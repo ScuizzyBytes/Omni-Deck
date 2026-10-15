@@ -1,0 +1,6 @@
+{
+    "theme": "Dark",
+    "accent_color": "#00ff66",
+    "refresh_rate_ms": 1000,
+    "default_city": "Berlin"
+}
