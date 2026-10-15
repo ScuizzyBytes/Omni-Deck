@@ -1,31 +1,29 @@
 import json
-from pathlib import Path
-from typing import Any, Dict
+import os
 
 
 class ConfigManager:
-    def __init__(self, filepath: str = "settings.json") -> None:
-        self.filepath = Path(filepath)
-        self.default_config: Dict[str, Any] = {
+    def __init__(self, filename="settings.json") -> None:
+        self.filename = filename
+        self.default_config = {
             "theme": "Dark",
+            "accent_color": "#00ff66",
             "refresh_rate_ms": 1000,
-            "accent_color": "#00ff66"
+            "default_city": "Berlin"
         }
-        self.config = self.load_config
+        self.config = self.load_config()
 
-    def load_config(self) -> Dict[str, Any]:
-
-        if self.filepath.exists():
+    def load_config(self) -> dict:
+        if not os.path.exists(self.filename) or os.path.getsize(self.filename) == 0:
             self.save_config(self.default_config)
             return self.default_config
 
         try:
-            with open(self.filepath, "r", encoding="utf-8") as f:
+            with open(self.filename, "r", encoding="utf-8") as f:
                 return json.load(f)
         except Exception:
             return self.default_config
 
-    def save_config(self, config_data: Dict[str, Any]) -> None:
-        with open(self.filepath, "w", encoding="utf-8") as f:
-            json.dump(config_data, f, indent=4)
-        
+    def save_config(self, settings: dict) -> None:
+        with open(self.filename, "w", encoding="utf-8") as f:
+            json.dump(settings, f, indent=4, ensure_ascii=False)
