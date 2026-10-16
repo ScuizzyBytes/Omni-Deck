@@ -3,7 +3,7 @@ import os
 
 
 class ConfigManager:
-    def __init__(self, filename="settings.json") -> None:
+    def __init__(self, filename="My First Prroject/settings.json") -> None:
         self.filename = filename
         self.default_config = {
             "theme": "Dark",
