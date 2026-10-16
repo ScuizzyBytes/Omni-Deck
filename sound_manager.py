@@ -5,7 +5,7 @@ import pygame
 
 class SoundManager:  
 
-    def __init__(self, sound_folder: str = "assets/sounds"):
+    def __init__(self, sound_folder: str = "My First Project/assets"):
         pygame.mixer.init()   
 
         self.sound_folder = sound_folder
