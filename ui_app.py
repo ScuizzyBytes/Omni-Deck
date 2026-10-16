@@ -1,8 +1,11 @@
+import random
+
 import customtkinter as ctk
 from api_client import ApiClient
 from config_manager import ConfigManager
 from PIL import Image
 from telemetry import SystemTelemetry
+from sound_manager import SoundManager
 
 
 class UIApp(ctk.CTk):
@@ -22,6 +25,8 @@ class UIApp(ctk.CTk):
         self, text="SYSTEM TELEMETRY HUD", font=("Arial", 20, "bold"), text_color="green"
     )
     self.title_label.pack(pady=20)
+
+    self.sound_manager = SoundManager()
 
     self.cpu_label = ctk.CTkLabel(
         self, text="CPU Load: 0%", font=("Arial", 14, "bold")
@@ -43,16 +48,16 @@ class UIApp(ctk.CTk):
     )
     self.weather_label.pack(pady=15)
 
-    self.button1 = ctk.CTkButton(self, font=("Arial", 14, "bold"), text="Click to Change")
+    self.button1 = ctk.CTkButton(self, font=("Arial", 14, "bold"), text="Click to Change City", command= self.change_city)
 
     self.button1.pack(pady=20)
 
-    weather = self.api_client.get_weather_data()
-    city_name = weather["city"]
+    self.weather = self.api_client.get_weather_data()
+    self.city_name = self.weather["city"]
 
-    image_path = f"My First Project/assets/{city_name}.jpg"
+    self.image_path = f"My First Project/assets/{self.city_name}.jpg"
 
-    City_image = Image.open(image_path)
+    City_image = Image.open(self.image_path)
 
     self.city_img = ctk.CTkImage(light_image=City_image, dark_image=City_image, size=(300, 150))
 
@@ -83,7 +88,32 @@ class UIApp(ctk.CTk):
     interval = self.settings.get("refresh_rate_ms", 1000)
     self.after(interval, self.update_loop)
 
+  def change_city(self):
 
+    self.sound_manager.play("click")
+
+    cities = ["Berlin", "Tokyo", "London", "Paris"]
+
+    new_city = random.choice(cities)
+
+    if self.city_name == new_city:
+      return
+
+    
+    self.city_name = new_city
+    self.api_client = ApiClient(self.city_name)
+    weather = self.api_client.get_weather_data()
+
+    self.image_path = f"My First Project/assets/{self.city_name}.jpg"
+    city_image = Image.open(self.image_path)
+    self.city_img = ctk.CTkImage(light_image=city_image, dark_image=city_image, size=(300, 150))
+
+    self.Ip_City.configure(image=self.city_img)
+    self.weather_label.configure(text=f"Weather: {weather['temp']}°C | {weather['desc']}")
+    
+    print(f"[HUD] image has been changed to {self.city_img}")
+    print(f"[HUD] city has been changed to {self.city_name}")
+    
 
 app = UIApp()
 app.mainloop()
